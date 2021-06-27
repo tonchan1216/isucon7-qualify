@@ -533,9 +533,9 @@ func getHistory(c echo.Context) error {
 		return ErrBadReqeust
 	}
 
-	messages := []Message{}
+	messages := []MessageWithUser{}
 	err = db.Select(&messages,
-		"SELECT * FROM message WHERE channel_id = ? ORDER BY id DESC LIMIT ? OFFSET ?",
+		"SELECT message.id, message.created_at, message.content, user.name, user.display_name, user.avatar_icon FROM message JOIN user on message.user_id = user.id WHERE channel_id = ? ORDER BY id DESC LIMIT ? OFFSET ?",
 		chID, N, (page-1)*N)
 	if err != nil {
 		return err
@@ -543,10 +543,18 @@ func getHistory(c echo.Context) error {
 
 	mjson := make([]map[string]interface{}, 0)
 	for i := len(messages) - 1; i >= 0; i-- {
-		r, err := jsonifyMessage(messages[i])
-		if err != nil {
-			return err
-		}
+		m := messages[i]
+		u := User{}
+		u.Name = m.Name
+		u.DisplayName = m.DisplayName
+		u.AvatarIcon = m.AvatarIcon
+
+		r := make(map[string]interface{})
+		r["id"] = m.ID
+		r["user"] = u
+		r["date"] = m.CreatedAt.Format("2006/01/02 15:04:05")
+		r["content"] = m.Content
+
 		mjson = append(mjson, r)
 	}
 

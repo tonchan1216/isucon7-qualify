@@ -75,7 +75,7 @@ func init() {
 			break
 		}
 		log.Println(err)
-		time.Sleep(time.Second * 5)
+		time.Sleep(time.Second * 3)
 	}
 
 	db.SetMaxOpenConns(20)

@@ -134,7 +134,7 @@ type MessageWithUser struct {
 
 func queryMessages(chanID, lastID int64) ([]MessageWithUser, error) {
 	msgs := []MessageWithUser{}
-	err := db.Select(&msgs, "SELECT message.id, message.created_at, message.content, user.name, user.display_name, user.avatar_icon FROM message JOIN user on message.user_id = user.id WHERE message.id > '1' AND channel_id = '4' ORDER BY message.id DESC LIMIT 100",
+	err := db.Select(&msgs, "SELECT message.id, message.created_at, message.content, user.name, user.display_name, user.avatar_icon FROM message JOIN user on message.user_id = user.id WHERE message.id > ? AND channel_id = ? ORDER BY message.id DESC LIMIT 100",
 		lastID, chanID)
 	return msgs, err
 }

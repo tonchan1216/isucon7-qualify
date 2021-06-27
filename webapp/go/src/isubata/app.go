@@ -362,9 +362,9 @@ func postMessage(c echo.Context) error {
 
 func jsonifyMessage(m MessageWithUser) (map[string]interface{}, error) {
 	u := User{}
-	u["Name"] = m.Name
-	u["DisplayName"] = m.DisplayName
-	u["AvatarIcon"] = m.AvatarIcon
+	u.Name = m.Name
+	u.DisplayName = m.DisplayName
+	u.AvatarIcon = m.AvatarIcon
 	// err := db.Get(&u, "SELECT name, display_name, avatar_icon FROM user WHERE id = ?",
 	// 	m.UserID)
 	// if err != nil {

@@ -360,16 +360,13 @@ func postMessage(c echo.Context) error {
 	return c.NoContent(204)
 }
 
-func jsonifyMessage(m MessageWithUser) (map[string]interface{}, error) {
+func jsonifyMessage(m Message) (map[string]interface{}, error) {
 	u := User{}
-	u.Name = m.Name
-	u.DisplayName = m.DisplayName
-	u.AvatarIcon = m.AvatarIcon
-	// err := db.Get(&u, "SELECT name, display_name, avatar_icon FROM user WHERE id = ?",
-	// 	m.UserID)
-	// if err != nil {
-	// 	return nil, err
-	// }
+	err := db.Get(&u, "SELECT name, display_name, avatar_icon FROM user WHERE id = ?",
+		m.UserID)
+	if err != nil {
+		return nil, err
+	}
 
 	r := make(map[string]interface{})
 	r["id"] = m.ID
@@ -402,10 +399,18 @@ func getMessage(c echo.Context) error {
 	response := make([]map[string]interface{}, 0)
 	for i := len(messages) - 1; i >= 0; i-- {
 		m := messages[i]
-		r, err := jsonifyMessage(m)
-		if err != nil {
-			return err
-		}
+
+		u := User{}
+		u.Name = m.Name
+		u.DisplayName = m.DisplayName
+		u.AvatarIcon = m.AvatarIcon
+
+		r := make(map[string]interface{})
+		r["id"] = m.ID
+		r["user"] = u
+		r["date"] = m.CreatedAt.Format("2006/01/02 15:04:05")
+		r["content"] = m.Content
+
 		response = append(response, r)
 	}
 
